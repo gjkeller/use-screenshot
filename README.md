@@ -19,6 +19,11 @@ node skills/use-screenshot/scripts/screenshot-agent.js --clipboard-only
 node skills/use-screenshot/scripts/screenshot-agent.js --downloads
 ```
 
+## Recommendation
+
+Add a short blurb to your `~/AGENTS.md` so your agent knows how to invoke
+`use-screenshot` and parse the two-line output.
+
 ## Requirements
 
 - Node.js (no external npm deps)

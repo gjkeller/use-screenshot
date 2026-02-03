@@ -1,13 +1,13 @@
 ## use-screenshot skill
 
-`use-screenshot` is a skills.sh-compatible skill that fetches the latest
-screenshot or clipboard image and returns a temp file path. It prints two lines:
+`use-screenshot` is a skill that fetches the latest screenshot or clipboard
+image and returns a temp file path. It prints two lines:
 the source (`clipboard` or original file path) and the temp file path.
 
 ## Install (skills.sh)
 
 ```bash
-npx skills add gjkeller/screenshot-agent
+npx skills add gjkeller/use-screenshot
 ```
 
 This repo contains the skill at `skills/use-screenshot/`.

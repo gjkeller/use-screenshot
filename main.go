@@ -44,8 +44,9 @@ func main() {
 }
 
 type options struct {
-	useDownloads bool
-	verbose      bool
+	useDownloads  bool
+	verbose       bool
+	clipboardOnly bool
 }
 
 func parseArgs(args []string) (options, bool, error) {
@@ -53,6 +54,7 @@ func parseArgs(args []string) (options, bool, error) {
 	var help bool
 	fs := flag.NewFlagSet("screenshot-agent", flag.ContinueOnError)
 	fs.SetOutput(io.Discard)
+	fs.BoolVar(&opts.clipboardOnly, "clipboard-only", false, "use clipboard only (no file fallback)")
 	fs.BoolVar(&opts.useDownloads, "downloads", false, "search Downloads instead of Desktop")
 	fs.BoolVar(&opts.verbose, "verbose", false, "verbose logging to stderr")
 	fs.BoolVar(&opts.verbose, "v", false, "verbose logging to stderr")
@@ -74,6 +76,7 @@ func printUsage(w io.Writer) {
 	fmt.Fprintln(w, "")
 	fmt.Fprintln(w, "options:")
 	fmt.Fprintln(w, "  -h, -help, --help    show this help and exit")
+	fmt.Fprintln(w, "  --clipboard-only      use clipboard only (no file fallback)")
 	fmt.Fprintln(w, "  --downloads          search Downloads instead of Desktop")
 	fmt.Fprintln(w, "  -v, --verbose         verbose logging to stderr")
 }
@@ -85,6 +88,17 @@ type result struct {
 
 func run(opts options) (result, error) {
 	clipboardCandidate, clipboardErr := readClipboardImage()
+	if opts.clipboardOnly {
+		if clipboardErr == nil {
+			logf(opts, "selected clipboard candidate (clipboard-only)")
+			return handleClipboardCandidate(clipboardCandidate)
+		}
+		if clipboardErr != nil && !errors.Is(clipboardErr, errNotFound) {
+			return result{}, clipboardErr
+		}
+		return result{}, errNotFound
+	}
+
 	fileCandidate, fileErr := findFallbackImage(opts.useDownloads)
 	now := time.Now()
 
